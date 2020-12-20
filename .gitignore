@@ -1,0 +1,28 @@
+# IDEs files
+.idea
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+
+# Development BDD
+db.sqlite3
+
+# Translation files
+*.mo
+
+# Media
+media/
+
+# statics
+static/
+
+# venv
+venv/
+
+# front
+node_modules/
+# dist
+website/assets/dist/
+
+# env file
+.env

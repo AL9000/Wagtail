@@ -1,25 +1,51 @@
 {% extends "base.html" %}
 
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load static wagtailcore_tags wagtailimages_tags %}
 
 {% block body_class %}template-blogindexpage{% endblock %}
 
 {% block content %}
-    <h1>{{ page.title }}</h1>
+  <!-- Page Header -->
+  {% image page.image scale-100 as index_image %}
+  <header class="masthead" style="background-image: url({{ index_image.url }})">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>{{ page.title }}</h1>
+            <span class="subheading">{{ page.intro|richtext }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    <div class="intro">{{ page.intro|richtext }}</div>
-
-    {% for post in blogpages %}
-      {% with post=post.specific %}
-          <h2><a href="{% pageurl post %}">{{ post.title }}</a></h2>
-
-          {% with post.main_image as main_image %}
-              {% if main_image %}{% image main_image fill-160x100 %}{% endif %}
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        {% for post in blogpages %}
+          {% with post=post.specific %}
+            <div class="post-preview">
+              <a href="{% pageurl post %}">
+                <h2 class="post-title">
+                  {{ post.title }}
+                </h2>
+                <h3 class="post-subtitle">
+                  {{ post.intro }}
+                </h3>
+              </a>
+              <p class="post-meta">
+                {{ post.date|date }}
+              </p>
+            </div>
+            {% if not forloop.last %}
+              <hr>
+            {% endif %}
           {% endwith %}
-
-          <p>{{ post.intro }}</p>
-          {{ post.body|richtext }}
-      {% endwith %}
-  {% endfor %}
-
+        {% endfor %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

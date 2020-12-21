@@ -14,6 +14,10 @@ from wagtail.snippets.models import register_snippet
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
 
+    content_panels = Page.content_panels + [
+        FieldPanel('intro', classname="full")
+    ]
+
     def get_context(self, request):
         # Update context to include only published posts, ordered by reverse-chron
         context = super().get_context(request)

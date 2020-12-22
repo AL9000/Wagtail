@@ -2,23 +2,50 @@
 {% load wagtailcore_tags %}
 
 {% block content %}
+  <!-- Page Header -->
+  <header class="masthead">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="post-heading">
+            <h2 class="subheading">Les articles taggués "{{ request.GET.tag }}"</h2>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    {% if request.GET.tag|length %}
-        <h4>Showing pages tagged "{{ request.GET.tag }}"</h4>
-    {% endif %}
+  <!-- Post Content -->
+  <article>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
 
-    {% for blogpage in blogpages %}
-
-          <p>
-              <strong><a href="{% pageurl blogpage %}">{{ blogpage.title }}</a></strong><br />
-              <small>Revised: {{ blogpage.latest_revision_created_at }}</small><br />
-              {% if blogpage.author %}
-                <p>By {{ blogpage.author.profile }}</p>
+          {% for post in blogpages %}
+            {% with post=post.specific %}
+              <div class="post-preview">
+                <a href="{% pageurl post %}">
+                  <h2 class="post-title">
+                    {{ post.title }}
+                  </h2>
+                  <h3 class="post-subtitle">
+                    {{ post.intro }}
+                  </h3>
+                </a>
+                <p class="post-meta">
+                  {{ post.date|date }}
+                </p>
+              </div>
+              {% if not forloop.last %}
+                <hr>
               {% endif %}
-          </p>
-
-    {% empty %}
-        No pages found with that tag.
-    {% endfor %}
-
+            {% endwith %}
+          {% empty %}
+            Pas d'articles trouvés avec ce tag.
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+  </article>
 {% endblock %}

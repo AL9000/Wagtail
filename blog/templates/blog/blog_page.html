@@ -27,12 +27,15 @@
     <div class="container">
       <div class="row">
         <div class="col-lg-8 col-md-10 mx-auto">
-          <span>Posté avec les catégories </span>
-          <span>{{ page.categories.all|join:',' }}</span>
+
+          {% if page.categories.count %}
+            <span>Posté avec les catégories </span>
+            <span>{{ page.categories.all|join:',' }}</span>
+          {% endif %}
 
           {% if page.tags.all.count %}
             <div class="tags meta">
-              <span>avec les tags </span>
+              <span>Tagué </span>
               {% for tag in page.tags.all %}
                 <a href="{% slugurl 'tags' %}?tag={{ tag }}"><span class="badge badge-secondary">{{ tag }}</span></a>
               {% endfor %}
@@ -41,14 +44,15 @@
 
           {{ page.body|richtext }}
 
-          {% for item in page.gallery_images.all %}
-            <div style="float: left; margin: 10px">
-              {% image item.image fill-320x240 %}
+          {% for item in page.gallery_images.all|slice:"1:" %}
+            <div>
+              {% image item.image scale-100 as item_image %}
+              <img src="{{ item_image.url }}" class="img-fluid" alt="Responsive image">
               <p>{{ item.caption }}</p>
             </div>
           {% endfor %}
 
-          <p style="clear: both;"><a href="{{ page.get_parent.url }}">Return to blog</a></p>
+          <p><a href="{{ page.get_parent.url }}">Revenir à l'accueil du blog</a></p>
         </div>
       </div>
     </div>

@@ -14,7 +14,7 @@ from wagtail.snippets.models import register_snippet
 class BlogIndexPage(Page):
     intro = RichTextField(blank=True)
     image = models.ForeignKey(
-        'wagtailimages.Image', on_delete=models.CASCADE, related_name='+'
+        'wagtailimages.Image', on_delete=models.SET_NULL, related_name='+', null=True
     )
 
     content_panels = Page.content_panels + [

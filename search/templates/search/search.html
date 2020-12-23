@@ -6,33 +6,71 @@
 {% block title %}Search{% endblock %}
 
 {% block content %}
-    <h1>Search</h1>
 
-    <form action="{% url 'search' %}" method="get">
-        <input type="text" name="query"{% if search_query %} value="{{ search_query }}"{% endif %}>
-        <input type="submit" value="Search" class="button">
-    </form>
+  <!-- Page Header -->  <!-- TODO use background image from Images collection -->
+  <header class="masthead" style="background-image: url({% static 'img/search.jpg' %})">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>Chercher un article</h1>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
 
-    {% if search_results %}
-        <ul>
-            {% for result in search_results %}
-                <li>
-                    <h4><a href="{% pageurl result %}">{{ result }}</a></h4>
-                    {% if result.search_description %}
-                        {{ result.search_description }}
-                    {% endif %}
-                </li>
-            {% endfor %}
-        </ul>
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <form action="{% url 'search' %}" method="get">
+          <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+              <label>Nom d'article</label>
+              <input type="text" class="form-control" placeholder="Nom d'article" name="query" {% if search_query %} value="{{ search_query }}"{% endif %} required>
+              <p class="help-block text-danger"></p>
+            </div>
+          </div>
+        </form>
 
-        {% if search_results.has_previous %}
-            <a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}">Previous</a>
+        {% if search_results %}
+          {% for result in search_results %}
+            {% with post=result.specific %}
+              <div class="post-preview">
+                <a href="{% pageurl post %}">
+                  <h2 class="post-title">
+                    {{ post.title }}
+                  </h2>
+                  <h3 class="post-subtitle">
+                    {{ post.intro|richtext }}
+                  </h3>
+                </a>
+                <p class="post-meta">
+                  {{ post.date|date }}
+                </p>
+              </div>
+              {% if not forloop.last %}
+                <hr>
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+
+          <div class="clearfix">
+            {% if search_results.has_previous %}
+              <a class="btn btn-primary float-left" href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.previous_page_number }}">← Précédent</a>
+            {% endif %}
+
+            {% if search_results.has_next %}
+              <a class="btn btn-primary float-right" href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.next_page_number }}">Suivant &rarr;</a>
+            {% endif %}
+          </div>
+
+        {% elif search_query %}
+          <p>Pas de résultat.</p>
         {% endif %}
-
-        {% if search_results.has_next %}
-            <a href="{% url 'search' %}?query={{ search_query|urlencode }}&amp;page={{ search_results.next_page_number }}">Next</a>
-        {% endif %}
-    {% elif search_query %}
-        No results found
-    {% endif %}
+      </div>
+    </div>
+  </div>
 {% endblock %}

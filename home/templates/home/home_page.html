@@ -1,9 +1,145 @@
 {% extends "base.html" %}
 
-{% load wagtailcore_tags %}
+{% load static wagtailcore_tags wagtailimages_tags %}
 
-{% block body_class %}template-homepage{% endblock %}
+{% block extra_css %}
+  <link rel="stylesheet" type="text/css" href="{% static 'css/home.css' %}">
+{% endblock %}
+
+{% block body_class %}template-blogindexpage{% endblock %}
 
 {% block content %}
-    {{ page.body|richtext }}
+  <!-- Page Header -->
+  {% image page.image scale-100 as index_image %}
+  <header class="masthead" style="background-image: url({{ index_image.url }})">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="site-heading">
+            <h1>{{ page.title }}</h1>
+            <span class="subheading">{{ page.subtitle }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="container">
+        <div class="alert alert-success text-center" role="alert">
+          {{ message }}
+        </div>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <!-- Main Content -->
+  <section class="page-section portfolio" id="portfolio">
+    <div class="container">
+      <!-- Portfolio Section Heading-->
+      <h2 class="text-center">Portfolio</h2>
+      <!-- Portfolio Grid Items-->
+      <div class="row justify-content-center">
+        {% for item in page.portfolio_items.all %}
+          <div class="col-md-6 col-lg-4 mb-5">
+            <div class="portfolio-item mx-auto" data-toggle="modal" data-target="#portfolioModal{{ forloop.counter }}">
+              <div class="portfolio-item-caption d-flex align-items-center justify-content-center h-100 w-100">
+                <div class="portfolio-item-caption-content text-center text-white"><i class="fas fa-plus fa-3x"></i>
+                </div>
+              </div>
+              {% image item.image scale-100 as item_image %}
+              <img class="img-fluid" src="{{ item_image.url }}" alt=""/>
+            </div>
+          </div>
+          <div class="portfolio-modal modal fade" id="portfolioModal{{ forloop.counter }}" tabindex="-1" role="dialog"
+               aria-labelledby="portfolioModal{{ forloop.counter }}Label" aria-hidden="true">
+            <div class="modal-dialog modal-xl" role="document">
+              <div class="modal-content">
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true"><i class="fas fa-times"></i></span>
+                </button>
+                <div class="modal-body text-center">
+                  <div class="container">
+                    <div class="row justify-content-center">
+                      <div class="col-lg-8">
+                        <!-- Portfolio Modal - Title-->
+                        <h2 class="mt-2 mb-4">{{ item.title }}</h2>
+                        <!-- Portfolio Modal - Image-->
+                        <img class="img-fluid rounded mb-5 mt-5" src="{{ item_image.url }}" alt=""/>
+                        <!-- Portfolio Modal - Text-->
+                        <p>{{ item.description|richtext }}</p>
+                        {% if item.project_url %}
+                          <a href="{{ item.project_url }}" class="btn btn-primary mb-1" target="_blank">
+                            <i class="fas fa-folder-open"></i>
+                            Voir ce projet
+                          </a>
+                        {% endif %}
+                        <button class="btn btn-secondary mb-1" data-dismiss="modal">
+                          <i class="fas fa-times fa-fw"></i>
+                          Fermer la fenêtre
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </section>
+
+  <!-- Presentation -->
+  <section class="page-section about-me">
+    <div class="container text-center">
+      <h2 class="text-center">self</h2>
+      <p>{{ page.body|richtext }}</p>
+    </div>
+  </section>
+
+  <section class="page-section" id="contact">
+    <div class="container">
+      <!-- Contact Section Heading-->
+      <h2 class="text-center">Me contacter</h2>
+      <div class="text-center">{{ page.contact_text|richtext }}</div>
+        <!-- Contact Section Form-->
+        <div class="row">
+          <div class="col-lg-8 mx-auto">
+            <form action="{% pageurl page %}" method="POST">
+              {% csrf_token %}
+
+              {% if form.non_field_errors %}
+                <div class="row">
+                  <div class="col-sm-12 text-danger">{{ form.non_field_errors }}</div>
+                </div>
+              {% endif %}
+
+              {% for field in form %}
+                <div class="control-group">
+                  {% if field.errors %}
+                    <div class="alert alert-danger">
+                      {{ field.label_tag }} {{ field }} {{ field.errors }}
+                    </div>
+                  {% else %}
+                    <div class="form-group floating-label-form-group controls mb-0 pb-2">
+                      {{ field.errors }}
+                      <label>{{ field.label }}</label>
+                      {{ field }}
+                      <p class="help-block text-danger"></p>
+                    </div>
+                  {% endif %}
+                </div>
+              {% endfor %}
+              <div class="form-group text-center mt-3">
+                <button class="btn btn-primary" id="sendMessageButton" type="submit">Envoyer</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 {% endblock %}
